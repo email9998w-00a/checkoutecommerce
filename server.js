@@ -3,8 +3,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import crypto from 'node:crypto';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const PORT = Number(process.env.PORT || 3000);
 const BLACKCAT_URL = (process.env.BLACKCAT_URL || 'https://api.blackcatoficial.com/api').replace(/\/$/, '');
 const BLACKCAT_API_KEY = process.env.BLACKCAT_API_KEY;
@@ -16,6 +20,7 @@ if (!BLACKCAT_API_KEY) console.warn('BLACKCAT_API_KEY não configurada: criaçã
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors({ origin: PUBLIC_ORIGIN === '*' ? true : PUBLIC_ORIGIN }));
 app.use(express.json({ limit: '64kb' }));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(rateLimit({ windowMs: 60_000, limit: 30, standardHeaders: true, legacyHeaders: false }));
 
 const digits = value => String(value ?? '').replace(/\D/g, '');
@@ -45,6 +50,7 @@ function normalizeItems(items) {
   });
 }
 
+app.get('/', (_req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
 app.post('/api/create-pix', async (req, res) => {
