@@ -162,9 +162,8 @@ input,select{font:inherit}
 .pix-head .pixlogo{width:34px;height:34px;border-radius:8px;background:var(--success);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.7rem;flex:none}
 .pix-head strong{font-size:.9rem}
 .pix-head small{color:var(--muted);font-size:.75rem;display:block}
-.delivery-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:-3px 0 9px;padding:0;color:var(--muted);font-size:.7rem;line-height:1.35}
-.delivery-summary .delivery-copy{display:flex;flex-direction:column;min-width:0}
-.delivery-summary .delivery-copy:last-child{text-align:right;align-items:flex-end}
+.delivery-summary{margin:-3px 0 9px;padding:0;color:var(--muted);font-size:.7rem;line-height:1.35}
+.delivery-summary .delivery-copy{display:block}
 .delivery-summary .delivery-label{font-weight:700}
 .delivery-summary strong{color:var(--success);font-size:.72rem;font-weight:800}
 .delivery-summary small{display:block;margin-top:1px;color:var(--muted);font-size:.64rem}
@@ -416,12 +415,7 @@ input,select{font:inherit}
         <input id="cpf" type="tel" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" maxlength="14">
         <div class="msg">CPF inválido.</div>
       </div>
-      <div class="field">
-        <label for="telefone">Telefone <span class="required-mark">*</span></label>
-        <input id="telefone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999" maxlength="15">
-        <div class="msg">Informe um telefone válido.</div>
-      </div>
-      <p class="field-hint">Os dados são enviados com segurança ao servidor para processar o PIX.</p>
+      <p class="field-hint">Exigido pelo Banco Central para identificar quem paga via PIX.</p>
       <button class="section-link-back" id="backToDelivery" type="button"><svg class="ico"><use href="#i-arrow-left"/></svg> Voltar para entrega</button>
       <button class="btn btn-proceed" id="proceedPayment" type="button">Ir para o pagamento <span aria-hidden="true">→</span></button>
     </div>
@@ -440,14 +434,15 @@ input,select{font:inherit}
         <span>Subtotal</span>
         <strong id="subtotalPagar">R$ 0,00</strong>
       </div>
+      <div class="total-line">
+        <span>Frete</span>
+        <strong id="shippingPagar">Selecione</strong>
+      </div>
       <div class="delivery-summary" id="deliverySummary" aria-live="polite">
         <div class="delivery-copy">
-          <span class="delivery-label">Frete</span>
-          <strong id="shippingPagar">Selecione</strong>
-        </div>
-        <div class="delivery-copy">
+          <span class="delivery-label">Prazo</span>
           <strong id="deliverySummaryTitle">Selecione uma opção de frete</strong>
-          <small id="deliverySummaryDetail">Selecione uma opção</small>
+          <small id="deliverySummaryDetail">O prazo é contado após a confirmação do pagamento.</small>
         </div>
       </div>
       <div class="total-line grand">
@@ -529,7 +524,7 @@ input,select{font:inherit}
    ===================================================================== */
 const CONFIG = {
   PIXEL_ID:  '1838038347359216',
-  API_BASE:  '',            // frontend e API estão no mesmo serviço Render
+  API_BASE:  '',            // vazio = mesmo servidor que serve a página
   PIX_EXPIRE_MIN: 30,
   MODO_DEMO: false
 };
@@ -636,7 +631,7 @@ function updateTotals() {
     deliveryTitle.textContent = selectedShipping ? selectedShipping.promise : 'Selecione uma opção de frete';
     deliveryDetail.textContent = selectedShipping
       ? `${selectedShipping.name}`
-      : 'Selecione uma opção';
+      : 'O prazo é contado após a confirmação do pagamento.';
   }
 }
 updateTotals();
@@ -857,7 +852,7 @@ function clearFieldErrorOnInput(id) {
     }
   });
 }
-['cep', 'estado', 'cidade', 'bairro', 'rua', 'numero', 'nome', 'email', 'cpf', 'telefone'].forEach(clearFieldErrorOnInput);
+['cep', 'estado', 'cidade', 'bairro', 'rua', 'numero', 'nome', 'email', 'cpf'].forEach(clearFieldErrorOnInput);
 function validarEndereco() {
   const g = id => document.getElementById(id).value.trim();
   let ok = true;
@@ -875,7 +870,6 @@ function validarDados() {
   ok = setField('nome', g('nome').split(' ').filter(Boolean).length >= 2) && ok;
   ok = setField('email', /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(g('email'))) && ok;
   ok = setField('cpf', validCPF(g('cpf'))) && ok;
-  ok = setField('telefone', onlyD(g('telefone')).length >= 10 && onlyD(g('telefone')).length <= 11) && ok;
   return ok;
 }
 
@@ -921,7 +915,7 @@ function onEnterAdvance(ids, action) {
   }));
 }
 onEnterAdvance(['numero', 'compl'], () => document.getElementById('shippingCard').scrollIntoView({ behavior: 'smooth', block: 'center' }));
-onEnterAdvance(['nome', 'email', 'cpf', 'telefone'], () => document.getElementById('proceedPayment').click());
+onEnterAdvance(['nome', 'email', 'cpf'], () => document.getElementById('proceedPayment').click());
 
 /* =====================================================================
    RASTREAMENTO (UTMs + Pixel)
@@ -958,7 +952,7 @@ let timerInterval = null;
 function dadosCliente() {
   const g = id => document.getElementById(id).value.trim();
   return {
-    name: g('nome'), email: g('email'), phone: onlyD(g('telefone')), cpf: onlyD(g('cpf')),
+    name: g('nome'), email: g('email'), document: onlyD(g('cpf')),
     cep: onlyD(g('cep')), estado: g('estado'), cidade: g('cidade'),
     bairro: g('bairro'), rua: g('rua'), numero: g('numero'), complemento: g('compl')
   };
@@ -997,7 +991,7 @@ async function gerarPix() {
       const resp = await fetch(API + '/api/create-pix', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order, customer: dadosCliente(), shipping: { street: document.getElementById('rua').value, number: document.getElementById('numero').value, complement: document.getElementById('compl').value, neighborhood: document.getElementById('bairro').value, city: document.getElementById('cidade').value, state: document.getElementById('estado').value, zipCode: document.getElementById('cep').value }, tracking })
+        body: JSON.stringify({ order, amount: order.total, customer: dadosCliente(), tracking, fb: dadosFb(), signals: (window.mxSignals ? mxSignals() : {}) })
       });
       const j = await resp.json();
       if (!resp.ok || j.error) throw new Error(j.error || 'Falha ao gerar PIX');
