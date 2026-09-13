@@ -61,6 +61,19 @@ function normalizeItems(items) {
   });
 }
 
+function asText(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function imageSource(value) {
+  const text = asText(value);
+  if (!text) return '';
+  if (text.startsWith('data:image/')) return text;
+  if (/^https?:\/\//i.test(text)) return text;
+  if (/^[A-Za-z0-9+/=\r\n]+$/.test(text) && text.length > 100) return `data:image/png;base64,${text.replace(/\s/g, '')}`;
+  return '';
+}
+
 app.get('/', (_req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
@@ -100,10 +113,14 @@ app.post('/api/create-pix', async (req, res) => {
     }
     const data = result.data || result;
     const paymentData = data.paymentData || {};
-    const copyPaste = paymentData.copyPaste || paymentData.copiaECola || paymentData.pixCopyPaste || paymentData.qrCode || data.copyPaste || data.qrCode || '';
-    let qrCodeImage = paymentData.qrCodeBase64 || paymentData.qrCodeImage || paymentData.qr_image || data.qrCodeBase64 || '';
-    if (qrCodeImage && !String(qrCodeImage).startsWith('data:image/')) qrCodeImage = `data:image/png;base64,${qrCodeImage}`;
+    const rawQr = paymentData.qrCode || paymentData.qr_code || data.qrCode || data.qr_code || '';
+    const copyPaste = asText(paymentData.copyPaste || paymentData.copiaECola || paymentData.pixCopyPaste || (!imageSource(rawQr) ? rawQr : '') || data.copyPaste || data.copiaECola);
+    let qrCodeImage = imageSource(paymentData.qrCodeBase64) || imageSource(paymentData.qrCodeImage) || imageSource(paymentData.qr_image) || imageSource(rawQr) || imageSource(data.qrCodeBase64);
     if (!qrCodeImage && copyPaste) qrCodeImage = await QRCode.toDataURL(copyPaste, { errorCorrectionLevel: 'M', margin: 1, width: 512 });
+    if (!qrCodeImage) {
+      console.error('Blackcat não retornou QR Code nem código copia e cola', { transactionId: data.transactionId, keys: Object.keys(paymentData) });
+      return res.status(502).json({ error: 'A Blackcat não retornou dados suficientes para gerar o QR Code' });
+    }
     return res.status(201).json({ transaction_id: data.transactionId, pix_qrcode_image: qrCodeImage, pix_copy_paste: copyPaste, expires_at: paymentData.expiresAt, status: data.status });
   } catch (error) {
     return res.status(400).json({ error: error.message || 'Dados inválidos' });
