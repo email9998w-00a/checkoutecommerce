@@ -945,6 +945,14 @@ function dadosFb() { return { fbp: getCookie('_fbp'), fbc: getCookie('_fbc') }; 
 const btnGerar = document.getElementById('btnGerar');
 btnGerar.addEventListener('click', gerarPix);
 document.getElementById('btnRegenerate').addEventListener('click', gerarPix);
+document.getElementById('pixQr').addEventListener('error', () => {
+  const image = document.getElementById('pixQr');
+  if (!image.dataset.demoFallback) {
+    image.dataset.demoFallback = '1';
+    image.src = gerarQrFake();
+    image.alt = 'QR Code demonstrativo — não realiza pagamento';
+  }
+});
 let currentTxn = null;
 let pollingInterval = null;
 let timerInterval = null;
@@ -1017,7 +1025,8 @@ function mostrarPixErro() {
   document.querySelector('.trust-strip').classList.add('hidden');
   document.getElementById('headerStep').textContent = 'Pagamento';
   document.getElementById('pixArea').classList.remove('hidden');
-  document.getElementById('qrBox').classList.add('is-expired');
+  document.getElementById('qrBox').classList.remove('is-expired');
+  document.getElementById('pixQr').dataset.demoFallback = '1';
   document.getElementById('pixQr').src = gerarQrFake();
   document.getElementById('pixQr').alt = 'QR Code ilustrativo — não realiza pagamento';
   document.getElementById('pixCode').value = '';
@@ -1061,6 +1070,7 @@ function mostrarPix(pix) {
   document.getElementById('btnRegenerate').classList.remove('is-visible');
   document.getElementById('btnCopy').disabled = false;
   document.getElementById('pixCode').disabled = false;
+  document.getElementById('pixQr').dataset.demoFallback = hasGatewayQr ? '' : '1';
   document.getElementById('pixQr').src = qrImage;
   document.getElementById('pixQr').alt = hasGatewayQr ? 'QR Code PIX para pagamento' : 'QR Code demonstrativo — não realiza pagamento';
   if (!hasGatewayQr) {
@@ -1083,6 +1093,11 @@ function gerarQrFake() {
   const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 21" fill="#172b38">' + cells + '</svg>';
   return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
+
+// Mantém o espaço do QR Code preenchido desde o carregamento da página.
+// É apenas demonstrativo e não representa uma cobrança real.
+document.getElementById('pixQr').src = gerarQrFake();
+document.getElementById('pixQr').alt = 'QR Code demonstrativo — não realiza pagamento';
 
 document.getElementById('btnCopy').addEventListener('click', () => {
   const inp = document.getElementById('pixCode');
