@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import QRCode from 'qrcode';
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -60,7 +61,7 @@ function validCpf(value) {
 function normalizeItems(items) {
   if (!Array.isArray(items) || items.length < 1 || items.length > 50) throw new Error('Itens inválidos');
   return items.map(item => {
-    const title = clean(item.name || item.title || 'Produto');
+    const title = 'Compra Online';
     const quantity = Math.max(1, Math.min(999, Number(item.quantity || 1)));
     const unitPrice = Math.round(Number(item.price ?? item.unitPrice ?? 0) * 100);
     if (!title || !Number.isFinite(unitPrice) || unitPrice < 0) throw new Error('Item inválido');
@@ -78,12 +79,10 @@ app.post('/api/create-pix', async (req, res) => {
     const customer = body.customer || {};
     const name = clean(customer.name);
     const email = clean(customer.email);
-    const phone = digits(customer.phone);
     const cpf = digits(customer.cpf || customer.document);
     if (name.split(/\s+/).filter(Boolean).length < 2) throw new Error('Nome inválido');
     if (!validEmail(email)) throw new Error('E-mail inválido');
     if (!validCpf(cpf)) throw new Error('CPF inválido');
-    if (phone.length < 10 || phone.length > 11) throw new Error('Telefone inválido');
 
     const items = normalizeItems(body.order?.items || body.items);
     const amount = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0) + Math.round(Number(body.order?.shipping || 0) * 100);
@@ -95,7 +94,7 @@ app.post('/api/create-pix', async (req, res) => {
       currency: 'BRL',
       paymentMethod: 'pix',
       items,
-      customer: { name, email, phone, document: { number: cpf, type: 'cpf' } },
+      customer: { name, email, document: { number: cpf, type: 'cpf' } },
       pix: { expiresInDays: 1 },
       externalRef,
       ...(POSTBACK_URL ? { postbackUrl: POSTBACK_URL } : {})
@@ -124,11 +123,20 @@ app.post('/api/create-pix', async (req, res) => {
       return res.status(502).json({ error: 'Não foi possível gerar o PIX' });
     }
     const data = result.data || result;
+    const paymentData = data.paymentData || {};
+    const copyPaste = paymentData.copyPaste || paymentData.copiaECola || paymentData.pixCopyPaste || '';
+    let qrCodeImage = paymentData.qrCodeBase64 || paymentData.qrCodeImage || paymentData.qr_image || '';
+    if (qrCodeImage && !String(qrCodeImage).startsWith('data:image/')) {
+      qrCodeImage = `data:image/png;base64,${qrCodeImage}`;
+    }
+    if (!qrCodeImage && copyPaste) {
+      qrCodeImage = await QRCode.toDataURL(copyPaste, { errorCorrectionLevel: 'M', margin: 1, width: 512 });
+    }
     return res.status(201).json({
       transaction_id: data.transactionId,
-      pix_qrcode_image: data.paymentData?.qrCodeBase64,
-      pix_copy_paste: data.paymentData?.copyPaste,
-      expires_at: data.paymentData?.expiresAt,
+      pix_qrcode_image: qrCodeImage,
+      pix_copy_paste: copyPaste,
+      expires_at: paymentData.expiresAt,
       status: data.status
     });
   } catch (error) {
