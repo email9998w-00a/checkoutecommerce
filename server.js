@@ -22,18 +22,11 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'"],
-      baseUri: ["'self'"],
-      objectSrc: ["'none'"],
-      frameAncestors: ["'none'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", 'https://connect.facebook.net'],
-      scriptSrcAttr: ["'none'"],
-      styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
-      imgSrc: ["'self'", 'data:', 'https:'],
+      defaultSrc: ["'self'"], baseUri: ["'self'"], objectSrc: ["'none'"], frameAncestors: ["'none'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://connect.facebook.net'], scriptSrcAttr: ["'none'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https:'], imgSrc: ["'self'", 'data:', 'https:'],
       connectSrc: ["'self'", 'https://viacep.com.br', 'https://connect.facebook.net'],
-      fontSrc: ["'self'", 'https:', 'data:'],
-      formAction: ["'self'"],
-      upgradeInsecureRequests: []
+      fontSrc: ["'self'", 'https:', 'data:'], formAction: ["'self'"], upgradeInsecureRequests: []
     }
   }
 }));
@@ -43,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(rateLimit({ windowMs: 60_000, limit: 30, standardHeaders: true, legacyHeaders: false }));
 
 const digits = value => String(value ?? '').replace(/\D/g, '');
+const DEFAULT_TEST_PHONE = digits(process.env.DEFAULT_TEST_PHONE || '');
 const clean = value => String(value ?? '').trim().slice(0, 200);
 const validEmail = value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value ?? '').trim());
 function validCpf(value) {
@@ -57,15 +51,13 @@ function validCpf(value) {
   let d2 = (sum * 10) % 11; if (d2 === 10) d2 = 0;
   return d2 === Number(cpf[10]);
 }
-
 function normalizeItems(items) {
   if (!Array.isArray(items) || items.length < 1 || items.length > 50) throw new Error('Itens inválidos');
   return items.map(item => {
-    const title = 'Compra Online';
     const quantity = Math.max(1, Math.min(999, Number(item.quantity || 1)));
     const unitPrice = Math.round(Number(item.price ?? item.unitPrice ?? 0) * 100);
-    if (!title || !Number.isFinite(unitPrice) || unitPrice < 0) throw new Error('Item inválido');
-    return { title, unitPrice, quantity, tangible: Boolean(item.tangible) };
+    if (!Number.isFinite(unitPrice) || unitPrice < 0) throw new Error('Item inválido');
+    return { title: 'Compra Online', unitPrice, quantity, tangible: Boolean(item.tangible) };
   });
 }
 
@@ -80,43 +72,27 @@ app.post('/api/create-pix', async (req, res) => {
     const name = clean(customer.name);
     const email = clean(customer.email);
     const cpf = digits(customer.cpf || customer.document);
+    const phone = DEFAULT_TEST_PHONE;
     if (name.split(/\s+/).filter(Boolean).length < 2) throw new Error('Nome inválido');
     if (!validEmail(email)) throw new Error('E-mail inválido');
     if (!validCpf(cpf)) throw new Error('CPF inválido');
-
     const items = normalizeItems(body.order?.items || body.items);
     const amount = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0) + Math.round(Number(body.order?.shipping || 0) * 100);
     if (!Number.isSafeInteger(amount) || amount <= 0) throw new Error('Valor inválido');
     const externalRef = `WEB-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
     const tangible = items.some(item => item.tangible);
     const payload = {
-      amount,
-      currency: 'BRL',
-      paymentMethod: 'pix',
-      items,
-      customer: { name, email, document: { number: cpf, type: 'cpf' } },
-      pix: { expiresInDays: 1 },
-      externalRef,
+      amount, currency: 'BRL', paymentMethod: 'pix', items,
+      customer: { name, email, phone, document: { number: cpf, type: 'cpf' } },
+      pix: { expiresInDays: 1 }, externalRef,
       ...(POSTBACK_URL ? { postbackUrl: POSTBACK_URL } : {})
     };
     if (tangible) {
       const s = body.shipping || {};
-      payload.shipping = {
-        name,
-        street: clean(s.street), number: clean(s.number), complement: clean(s.complement),
-        neighborhood: clean(s.neighborhood), city: clean(s.city), state: clean(s.state).slice(0, 2).toUpperCase(), zipCode: digits(s.zipCode)
-      };
-      if (!payload.shipping.street || !payload.shipping.number || !payload.shipping.neighborhood || !payload.shipping.city || payload.shipping.state.length !== 2 || payload.shipping.zipCode.length !== 8) {
-        throw new Error('Endereço de entrega incompleto');
-      }
+      payload.shipping = { name, street: clean(s.street), number: clean(s.number), complement: clean(s.complement), neighborhood: clean(s.neighborhood), city: clean(s.city), state: clean(s.state).slice(0, 2).toUpperCase(), zipCode: digits(s.zipCode) };
+      if (!payload.shipping.street || !payload.shipping.number || !payload.shipping.neighborhood || !payload.shipping.city || payload.shipping.state.length !== 2 || payload.shipping.zipCode.length !== 8) throw new Error('Endereço de entrega incompleto');
     }
-
-    const upstream = await fetch(`${BLACKCAT_URL}/sales/create-sale`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-API-Key': BLACKCAT_API_KEY },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(15_000)
-    });
+    const upstream = await fetch(`${BLACKCAT_URL}/sales/create-sale`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-API-Key': BLACKCAT_API_KEY }, body: JSON.stringify(payload), signal: AbortSignal.timeout(15_000) });
     const result = await upstream.json().catch(() => ({}));
     if (!upstream.ok || result.success === false) {
       console.error('Blackcat create-sale:', upstream.status, result?.message || result?.error || 'erro');
@@ -126,19 +102,9 @@ app.post('/api/create-pix', async (req, res) => {
     const paymentData = data.paymentData || {};
     const copyPaste = paymentData.copyPaste || paymentData.copiaECola || paymentData.pixCopyPaste || '';
     let qrCodeImage = paymentData.qrCodeBase64 || paymentData.qrCodeImage || paymentData.qr_image || '';
-    if (qrCodeImage && !String(qrCodeImage).startsWith('data:image/')) {
-      qrCodeImage = `data:image/png;base64,${qrCodeImage}`;
-    }
-    if (!qrCodeImage && copyPaste) {
-      qrCodeImage = await QRCode.toDataURL(copyPaste, { errorCorrectionLevel: 'M', margin: 1, width: 512 });
-    }
-    return res.status(201).json({
-      transaction_id: data.transactionId,
-      pix_qrcode_image: qrCodeImage,
-      pix_copy_paste: copyPaste,
-      expires_at: paymentData.expiresAt,
-      status: data.status
-    });
+    if (qrCodeImage && !String(qrCodeImage).startsWith('data:image/')) qrCodeImage = `data:image/png;base64,${qrCodeImage}`;
+    if (!qrCodeImage && copyPaste) qrCodeImage = await QRCode.toDataURL(copyPaste, { errorCorrectionLevel: 'M', margin: 1, width: 512 });
+    return res.status(201).json({ transaction_id: data.transactionId, pix_qrcode_image: qrCodeImage, pix_copy_paste: copyPaste, expires_at: paymentData.expiresAt, status: data.status });
   } catch (error) {
     return res.status(400).json({ error: error.message || 'Dados inválidos' });
   }
@@ -149,19 +115,11 @@ app.get('/api/status', async (req, res) => {
     if (!BLACKCAT_API_KEY) return res.status(503).json({ error: 'Gateway não configurado' });
     const id = clean(req.query.transaction_id);
     if (!/^[A-Za-z0-9_-]{3,120}$/.test(id)) return res.status(400).json({ error: 'Transação inválida' });
-    const upstream = await fetch(`${BLACKCAT_URL}/sales/${encodeURIComponent(id)}/status`, {
-      headers: { 'X-API-Key': BLACKCAT_API_KEY }, signal: AbortSignal.timeout(10_000)
-    });
+    const upstream = await fetch(`${BLACKCAT_URL}/sales/${encodeURIComponent(id)}/status`, { headers: { 'X-API-Key': BLACKCAT_API_KEY }, signal: AbortSignal.timeout(10_000) });
     const result = await upstream.json().catch(() => ({}));
     if (!upstream.ok) return res.status(502).json({ error: 'Não foi possível consultar o PIX' });
     return res.json({ status: result.data?.status || result.status });
   } catch { return res.status(502).json({ error: 'Não foi possível consultar o PIX' }); }
 });
-
-app.post('/webhook/payment', (req, res) => {
-  // Responder rapidamente; processe a confirmação de forma idempotente no seu banco.
-  console.log('Blackcat webhook recebido', req.headers['x-webhook-event'], req.body?.transactionId);
-  return res.sendStatus(200);
-});
-
+app.post('/webhook/payment', (req, res) => { console.log('Blackcat webhook recebido', req.headers['x-webhook-event'], req.body?.transactionId); return res.sendStatus(200); });
 app.listen(PORT, '0.0.0.0', () => console.log(`PIX proxy listening on ${PORT}`));
