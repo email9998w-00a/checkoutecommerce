@@ -17,7 +17,25 @@ const POSTBACK_URL = process.env.POSTBACK_URL || '';
 
 if (!BLACKCAT_API_KEY) console.warn('BLACKCAT_API_KEY não configurada: criação de PIX ficará indisponível.');
 
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      baseUri: ["'self'"],
+      objectSrc: ["'none'"],
+      frameAncestors: ["'none'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://connect.facebook.net'],
+      scriptSrcAttr: ["'none'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      connectSrc: ["'self'", 'https://viacep.com.br', 'https://connect.facebook.net'],
+      fontSrc: ["'self'", 'https:', 'data:'],
+      formAction: ["'self'"],
+      upgradeInsecureRequests: []
+    }
+  }
+}));
 app.use(cors({ origin: PUBLIC_ORIGIN === '*' ? true : PUBLIC_ORIGIN }));
 app.use(express.json({ limit: '64kb' }));
 app.use(express.static(path.join(__dirname, 'public')));
