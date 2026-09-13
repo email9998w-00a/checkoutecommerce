@@ -1044,6 +1044,8 @@ document.getElementById('btnRetryPage').addEventListener('click', () => {
 });
 
 function mostrarPix(pix) {
+  const hasGatewayQr = typeof pix?.qr_image === 'string' && pix.qr_image.trim().length > 0;
+  const qrImage = hasGatewayQr ? pix.qr_image : gerarQrFake();
   currentTxn = pix.id;
   document.getElementById('pixOrderSummary').classList.remove('hidden');
   document.getElementById('formArea').classList.add('hidden');
@@ -1059,13 +1061,18 @@ function mostrarPix(pix) {
   document.getElementById('btnRegenerate').classList.remove('is-visible');
   document.getElementById('btnCopy').disabled = false;
   document.getElementById('pixCode').disabled = false;
-  document.getElementById('pixQr').src = pix.qr_image;
+  document.getElementById('pixQr').src = qrImage;
+  document.getElementById('pixQr').alt = hasGatewayQr ? 'QR Code PIX para pagamento' : 'QR Code demonstrativo — não realiza pagamento';
+  if (!hasGatewayQr) {
+    document.getElementById('pixPageError').innerHTML = '<strong>QR Code demonstrativo.</strong><br>O gateway não retornou a imagem do QR Code. Este código não realiza pagamento.';
+    document.getElementById('pixPageError').classList.add('is-visible');
+  }
   document.getElementById('pixCode').value = pix.copia_e_cola;
   btnGerar.disabled = false;
   btnGerar.innerHTML = '<svg class="ico"><use href="#i-lock"/></svg> Gerar código PIX';
   window.scrollTo({ top: 0, behavior: 'smooth' });
   iniciarTimer();
-  iniciarPolling(pix.id);
+  if (!CONFIG.MODO_DEMO) iniciarPolling(pix.id);
 }
 
 function gerarQrFake() {
