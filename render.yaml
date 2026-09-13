@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: blackcat-pix-api
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: BLACKCAT_API_KEY
+        sync: false
+      - key: PUBLIC_ORIGIN
+        sync: false
+      - key: POSTBACK_URL
+        sync: false
+      - key: BLACKCAT_URL
+        value: https://api.blackcatoficial.com/api
