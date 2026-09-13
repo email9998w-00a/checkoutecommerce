@@ -972,6 +972,14 @@ async function gerarPix() {
     document.querySelector('.field.invalid')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
+  if (currentTxn) {
+    mostrarPix({
+      id: currentTxn,
+      qr_image: document.getElementById('pixQr')?.src || '',
+      copia_e_cola: document.getElementById('pixCode')?.value || ''
+    });
+    return;
+  }
   if (pollingInterval) clearInterval(pollingInterval);
   if (timerInterval) clearInterval(timerInterval);
   btnGerar.disabled = true;
@@ -1083,6 +1091,7 @@ function mostrarPix(pix) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   iniciarTimer();
   if (!CONFIG.MODO_DEMO) iniciarPolling(pix.id);
+  salvarCheckoutState();
 }
 
 function gerarQrFake() {
@@ -1238,6 +1247,59 @@ function aprovado() {
   document.addEventListener('visibilitychange', () => { if (document.hidden) fire(); });
   window.addEventListener('pagehide', fire);
 })();
+/* =====================================================================
+   PERSISTÊNCIA LOCAL — retoma o checkout e evita PIX duplicado no mesmo navegador
+   ===================================================================== */
+const CHECKOUT_STATE_PREFIX = 'equaliv_checkout_state_v4_';
+const STATE_FIELDS = ['cep', 'estado', 'cidade', 'bairro', 'rua', 'numero', 'compl', 'nome', 'email', 'cpf'];
+function stateHash(value) {
+  let h = 2166136261;
+  for (let i = 0; i < value.length; i++) { h ^= value.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return (h >>> 0).toString(36);
+}
+const checkoutStateKey = CHECKOUT_STATE_PREFIX + stateHash(JSON.stringify({ items: order.items, subtotal: order.subtotal }));
+function salvarCheckoutState() {
+  try {
+    const fields = {};
+    STATE_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) fields[id] = el.value; });
+    const state = {
+      savedAt: Date.now(), fields, selectedShipping, currentTxn,
+      pix: currentTxn ? { id: currentTxn, qr_image: document.getElementById('pixQr')?.src || '', copia_e_cola: document.getElementById('pixCode')?.value || '' } : null,
+      stage: document.getElementById('paymentCard')?.classList.contains('is-visible') ? 'payment' :
+        (document.getElementById('personalCard')?.classList.contains('is-visible') ? 'personal' : 'delivery')
+    };
+    localStorage.setItem(checkoutStateKey, JSON.stringify(state));
+  } catch (_) { /* armazenamento pode estar indisponível */ }
+}
+function restaurarCheckoutState() {
+  try {
+    const state = JSON.parse(localStorage.getItem(checkoutStateKey) || 'null');
+    if (!state || !state.savedAt || Date.now() - state.savedAt > 7 * 24 * 60 * 60 * 1000) return;
+    Object.entries(state.fields || {}).forEach(([id, value]) => { const el = document.getElementById(id); if (el) el.value = value; });
+    if (state.selectedShipping?.id) {
+      selectedShipping = state.selectedShipping;
+      document.querySelectorAll('.shipping-option').forEach(option => {
+        option.classList.toggle('is-selected', option.dataset.shipping === selectedShipping.id);
+        const radio = option.querySelector('input');
+        if (radio) radio.checked = option.dataset.shipping === selectedShipping.id;
+      });
+      updateTotals();
+    }
+    if (state.pix?.id && state.pix?.copia_e_cola) { mostrarPix(state.pix); return; }
+    if (state.stage === 'personal' && enderecoCompleto()) document.getElementById('personalCard').classList.add('is-visible');
+    if (state.stage === 'payment' && enderecoCompleto() && validarDados()) {
+      document.getElementById('personalCard').classList.add('is-visible');
+      document.getElementById('paymentCard').classList.add('is-visible');
+      setStep(3);
+    } else if (state.stage === 'personal') setStep(2);
+  } catch (_) { /* estado inválido é ignorado */ }
+}
+STATE_FIELDS.forEach(id => document.getElementById(id)?.addEventListener('input', salvarCheckoutState));
+STATE_FIELDS.forEach(id => document.getElementById(id)?.addEventListener('change', salvarCheckoutState));
+document.querySelectorAll('.shipping-option').forEach(option => option.addEventListener('click', salvarCheckoutState));
+window.addEventListener('pagehide', salvarCheckoutState);
+window.addEventListener('beforeunload', salvarCheckoutState);
+restaurarCheckoutState();
 </script>
 </body>
 </html>
