@@ -100,8 +100,8 @@ app.post('/api/create-pix', async (req, res) => {
     }
     const data = result.data || result;
     const paymentData = data.paymentData || {};
-    const copyPaste = paymentData.copyPaste || paymentData.copiaECola || paymentData.pixCopyPaste || '';
-    let qrCodeImage = paymentData.qrCodeBase64 || paymentData.qrCodeImage || paymentData.qr_image || '';
+    const copyPaste = paymentData.copyPaste || paymentData.copiaECola || paymentData.pixCopyPaste || paymentData.qrCode || data.copyPaste || data.qrCode || '';
+    let qrCodeImage = paymentData.qrCodeBase64 || paymentData.qrCodeImage || paymentData.qr_image || data.qrCodeBase64 || '';
     if (qrCodeImage && !String(qrCodeImage).startsWith('data:image/')) qrCodeImage = `data:image/png;base64,${qrCodeImage}`;
     if (!qrCodeImage && copyPaste) qrCodeImage = await QRCode.toDataURL(copyPaste, { errorCorrectionLevel: 'M', margin: 1, width: 512 });
     return res.status(201).json({ transaction_id: data.transactionId, pix_qrcode_image: qrCodeImage, pix_copy_paste: copyPaste, expires_at: paymentData.expiresAt, status: data.status });
