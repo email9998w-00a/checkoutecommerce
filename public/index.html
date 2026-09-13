@@ -1008,7 +1008,7 @@ async function gerarPix() {
 
 function mostrarPixErro() {
   const pageError = document.getElementById('pixPageError');
-  pageError.innerHTML = '<strong>O código PIX ainda não está disponível.</strong><br>Você pode tentar gerar novamente. Seus dados e o pedido foram preservados.';
+  pageError.innerHTML = '<strong>QR Code demonstrativo.</strong><br>Este QR Code não realiza pagamento. Você pode tentar gerar novamente.';
   pageError.classList.add('is-visible');
   document.getElementById('pixOrderSummary').classList.remove('hidden');
   document.getElementById('formArea').classList.add('hidden');
@@ -1018,8 +1018,8 @@ function mostrarPixErro() {
   document.getElementById('headerStep').textContent = 'Pagamento';
   document.getElementById('pixArea').classList.remove('hidden');
   document.getElementById('qrBox').classList.add('is-expired');
-  document.getElementById('pixQr').removeAttribute('src');
-  document.getElementById('pixQr').alt = 'QR Code indisponível no momento';
+  document.getElementById('pixQr').src = gerarQrFake();
+  document.getElementById('pixQr').alt = 'QR Code ilustrativo — não realiza pagamento';
   document.getElementById('pixCode').value = '';
   document.getElementById('pixCode').disabled = true;
   document.getElementById('btnCopy').disabled = true;
