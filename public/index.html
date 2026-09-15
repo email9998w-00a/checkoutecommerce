@@ -309,6 +309,7 @@ body{background:linear-gradient(180deg,#f3f7fa 0,#f8fafc 300px);padding-bottom:2
 #formArea{grid-area:form;min-width:0}.delivery-card,.personal-card,.payment-card{margin-bottom:16px}
 .delivery-card{display:block}.field{margin-bottom:15px}.field label{font-size:.76rem;margin-bottom:7px;color:#314a5d}.field input,.field select{min-height:50px;padding:13px 14px;border-radius:10px;border-color:#c8d7e1}.field input:focus,.field select:focus{border-color:#2c6d9c;box-shadow:0 0 0 4px rgba(44,109,156,.12)}
 .address-fields,.address-number-fields{margin-top:14px}.shipping-card{margin-top:21px;padding-top:20px}.shipping-title{font-size:.86rem}.shipping-subtitle{font-size:.73rem;margin-bottom:11px}.shipping-option{min-height:68px;padding:13px 12px;border-radius:11px}.shipping-option strong{font-size:.82rem}.shipping-option small{font-size:.7rem}.shipping-price{font-size:.8rem}
+.shipping-card.needs-choice .shipping-title{color:var(--danger)}.shipping-card.needs-choice .shipping-options{outline:2px solid rgba(179,57,47,.16);outline-offset:5px;border-radius:12px}
 .personal-card.is-visible,.payment-card.is-visible{display:block}.personal-card{border-top:3px solid var(--brand)}.payment-card{border-top:3px solid var(--success)}
 .privacy-note{padding:10px 11px;background:#f5f9fc;border:1px solid #e2ebf1;border-radius:9px;margin-bottom:16px;font-size:.71rem}.btn{min-height:54px;border-radius:10px;font-size:.95rem;box-shadow:0 5px 12px rgba(12,41,69,.12)}.btn.success{box-shadow:0 5px 12px rgba(18,128,84,.18)}
 .total-line{padding:13px 0}.total-line.grand{padding-top:17px}.total-line.grand strong{font-size:1.7rem}.pix-head{padding:13px 14px;border-radius:11px}.pix-head .pixlogo{width:38px;height:38px}.delivery-summary{margin:-2px 0 10px}
@@ -438,12 +439,12 @@ body{background:linear-gradient(180deg,#f3f7fa 0,#f8fafc 300px);padding-bottom:2
         <div class="shipping-options" role="radiogroup" aria-label="Opções de frete">
           <label class="shipping-option" data-shipping="standard">
             <input type="radio" name="shipping" value="standard">
-            <span><strong>Entrega em 3 Dias</strong><small>Entrega Economica</small></span>
+            <span><strong>Entrega econômica</strong><small>Prazo estimado após o pagamento</small></span>
             <span class="shipping-price">Grátis</span>
           </label>
           <label class="shipping-option" data-shipping="express">
             <input type="radio" name="shipping" value="express">
-            <span><strong>Receba Amanhã</strong><small>Entrega Expressa</small></span>
+            <span><strong>Entrega expressa</strong><small>Mais rapidez após o pagamento</small></span>
             <span class="shipping-price express">R$ 9,90</span>
           </label>
         </div>
@@ -502,7 +503,7 @@ body{background:linear-gradient(180deg,#f3f7fa 0,#f8fafc 300px);padding-bottom:2
         <span>Total a pagar</span>
         <strong id="totalPagar">R$ 0,00</strong>
       </div>
-      <button class="btn success" id="btnGerar" type="button" aria-live="polite"><svg class="ico"><use href="#i-lock"/></svg> Revisar e gerar PIX</button>
+      <button class="btn success" id="btnGerar" type="button" aria-live="polite"><svg class="ico"><use href="#i-lock"/></svg> Gerar código PIX</button>
       <button class="section-link-back" id="backToPersonal" type="button" style="justify-content:center;margin-top:10px"><svg class="ico"><use href="#i-arrow-left"/></svg> Voltar e corrigir meus dados</button>
       <div class="safenote"><svg class="ico"><use href="#i-shield"/></svg> Você só paga depois de revisar o total</div>
       <div class="pix-error hidden" id="pixError" role="alert"></div>
@@ -879,6 +880,7 @@ document.querySelectorAll('.shipping-option').forEach(option => option.addEventL
     ? { id: 'express', price: 9.90, name: 'Entrega expressa', promise: 'Receba amanhã' }
     : { id: 'standard', price: 0, name: 'Entrega econômica', promise: 'Entrega em 3 Dias' };
   updateTotals();
+  document.getElementById('shippingCard').classList.remove('needs-choice');
   if (enderecoCompleto()) {
     document.getElementById('personalCard').classList.add('is-visible');
     setStep(2);
@@ -899,7 +901,9 @@ function validCPF(cpf) {
 }
 function setField(id, ok) {
   const f = document.getElementById(id).closest('.field');
-  document.getElementById(id).classList.toggle('err', !ok);
+  const input = document.getElementById(id);
+  input.classList.toggle('err', !ok);
+  input.setAttribute('aria-invalid', ok ? 'false' : 'true');
   f.classList.toggle('invalid', !ok);
   return ok;
 }
@@ -908,6 +912,7 @@ function clearFieldErrorOnInput(id) {
   input.addEventListener('input', () => {
     if (input.value.trim()) {
       input.classList.remove('err');
+      input.setAttribute('aria-invalid', 'false');
       input.closest('.field').classList.remove('invalid');
     }
   });
@@ -933,10 +938,20 @@ function validarDados() {
   return ok;
 }
 
+function focarPrimeiroErro() {
+  const first = document.querySelector('.field.invalid input, .field.invalid select');
+  if (first) {
+    first.focus({ preventScroll: true });
+    first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
 document.getElementById('proceedPayment').addEventListener('click', () => {
   if (!validarEndereco() || !validarDados() || !selectedShipping) {
-    if (!selectedShipping) document.getElementById('shippingCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    document.querySelector('.field.invalid')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const shipping = document.getElementById('shippingCard');
+    shipping.classList.toggle('needs-choice', !selectedShipping);
+    if (!selectedShipping) shipping.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    else focarPrimeiroErro();
     return;
   }
   document.getElementById('paymentCard').classList.add('is-visible');
@@ -1073,7 +1088,7 @@ async function gerarPix() {
 
 function mostrarPixErro() {
   const pageError = document.getElementById('pixPageError');
-  pageError.innerHTML = '<strong>QR Code demonstrativo.</strong><br>Este QR Code não realiza pagamento. Você pode tentar gerar novamente.';
+  pageError.innerHTML = '<strong>Não foi possível gerar o PIX agora.</strong><br>Confira sua conexão e tente novamente. Nenhuma cobrança foi realizada.';
   pageError.classList.add('is-visible');
   document.getElementById('pixOrderSummary').classList.remove('hidden');
   document.getElementById('formArea').classList.add('hidden');
