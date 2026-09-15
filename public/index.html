@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Finalizar compra | Equaliv</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* =====================================================================
    TEMA — paleta única, institucional (navy + verde de confirmação)
@@ -12,19 +15,24 @@
 :root{
   --brand:#123b66;
   --brand-dark:#0b2945;
-  --success:#157347;
-  --success-dark:#105c39;
-  --danger:#a52f3d;
-  --ink:#172b38;
-  --muted:#617482;
-  --line:#d8e3ea;
-  --bg:#f4f7fa;
+  --brand-tint:#eef3f8;
+  --success:#127a53;
+  --success-dark:#0d5f41;
+  --danger:#b3392f;
+  --ink:#172333;
+  --muted:#5e6f7e;
+  --line:#dde5ec;
+  --bg:#f3f6fa;
   --card:#ffffff;
-  --radius:11px;
-  --shadow:0 4px 18px rgba(18,59,102,.06);
+  --radius:12px;
+  --radius-sm:8px;
+  --shadow:0 1px 2px rgba(15,35,60,.04), 0 10px 24px -8px rgba(15,35,60,.10);
+  --shadow-sm:0 1px 2px rgba(15,35,60,.05);
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:24px;--space-6:32px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:78px}
+:focus-visible{outline:2px solid #4a7b9e;outline-offset:2px}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:calc(78px + env(safe-area-inset-bottom, 0px))}
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 button{font:inherit;cursor:pointer;border:none;background:none}
@@ -41,10 +49,12 @@ input,select{font:inherit}
 
 /* ---- Header ---- */
 .top{display:flex;align-items:center;gap:12px;padding:18px 0 15px;border-bottom:1px solid var(--line);margin-bottom:14px}
-.top .back{width:31px;height:31px;border-radius:8px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--brand);font-size:1.15rem;flex:none}
-.top .back:hover{background:#f4f8fb}
-.top .logo{font-size:1.16rem;font-weight:800;color:var(--brand);letter-spacing:.1em}
-.top .h{margin-left:auto;text-align:right;font-size:.72rem;font-weight:700;color:var(--muted)}
+.top .back{width:32px;height:32px;border-radius:var(--radius-sm);background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--brand);font-size:1.15rem;flex:none;transition:.15s}
+.top .back:hover{background:var(--brand-tint);border-color:#c3d4e2}
+.top .brand{display:flex;align-items:center;gap:9px}
+.top .mark{width:28px;height:28px;border-radius:8px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;flex:none}
+.top .logo{font-size:1.02rem;font-weight:700;color:var(--ink)}
+.top .h{margin-left:auto;text-align:right;font-size:.72rem;font-weight:600;color:var(--muted)}
 
 /* ---- Indicador de progresso ---- */
 .progress{display:flex;align-items:center;justify-content:center;gap:6px;padding:2px 4px 16px}
@@ -140,7 +150,7 @@ input,select{font:inherit}
 .shipping-option:hover{border-color:#9eb4c8;background:#f9fbfd}
 .shipping-option:focus-within{border-color:#4a7b9e;box-shadow:0 0 0 3px rgba(74,123,158,.12)}
 .shipping-option.is-selected{border-color:var(--success);background:#f2faf5;box-shadow:0 0 0 1px var(--success)}
-.shipping-option input{width:16px;height:16px;accent-color:var(--success)}
+.shipping-option input{width:18px;height:18px;accent-color:var(--success)}
 .shipping-option strong{display:block;font-size:.79rem}
 .shipping-option small{display:block;margin-top:2px;color:var(--muted);font-size:.68rem}
 .shipping-price{color:var(--success);font-size:.78rem;font-weight:800;white-space:nowrap}
@@ -174,8 +184,9 @@ input,select{font:inherit}
 .total-line.grand{border-top:1px solid var(--line);margin-top:2px;padding-top:14px}
 .total-line.grand strong{font-size:1.55rem;color:var(--brand);font-weight:800}
 
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;background:var(--brand);color:#fff;font-size:.98rem;font-weight:750;padding:15px;border-radius:9px;text-align:center;transition:.2s}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;background:var(--brand);color:#fff;font-size:.98rem;font-weight:700;padding:15px;border-radius:var(--radius-sm);text-align:center;transition:background .15s,transform .1s}
 .btn:hover{background:var(--brand-dark)}
+.btn:active:not(:disabled){transform:scale(.99)}
 .btn:disabled{opacity:.6;cursor:not-allowed}
 .btn.success{background:var(--success)}
 .btn.success:hover{background:var(--success-dark)}
@@ -247,7 +258,7 @@ input,select{font:inherit}
 .foot a{text-decoration:underline}
 
 /* ---- Barra fixa de total (mobile) ---- */
-.ckbar{position:fixed;left:0;right:0;bottom:0;z-index:900;display:none;align-items:center;gap:12px;background:var(--brand-dark);padding:11px 16px;box-shadow:0 -4px 20px rgba(0,0,0,.22)}
+.ckbar{position:fixed;left:0;right:0;bottom:0;z-index:900;display:none;align-items:center;gap:12px;background:var(--brand-dark);padding:11px 16px calc(11px + env(safe-area-inset-bottom, 0px));box-shadow:0 -4px 20px rgba(0,0,0,.22)}
 .ckbar.show{display:flex}
 .ckbar .ck-txt{display:flex;flex-direction:column;line-height:1.2;color:#fff}
 .ckbar .ck-txt span{font-size:.68rem;opacity:.75}
@@ -265,6 +276,51 @@ input,select{font:inherit}
 @media (prefers-reduced-motion:reduce){
   .status-spinner{animation:none}
 }
+
+/* =====================================================================
+   REDESIGN CONVERSÃO — checkout editorial, claro e responsivo
+   ===================================================================== */
+:root{
+  --brand:#163f68;--brand-dark:#0c2945;--brand-soft:#eaf2f8;
+  --success:#128054;--success-dark:#0b6240;--success-soft:#edf9f3;
+  --ink:#152534;--muted:#637585;--line:#dbe5ec;--bg:#f6f8fb;
+  --card:#fff;--radius:16px;--radius-sm:10px;
+  --shadow:0 12px 32px rgba(16,43,70,.08),0 2px 5px rgba(16,43,70,.04);
+}
+body{background:linear-gradient(180deg,#f3f7fa 0,#f8fafc 300px);padding-bottom:24px}
+.securebar{height:36px;padding:0 16px;background:#102f4e;letter-spacing:.01em;font-size:.72rem}
+.wrap{max-width:1120px;padding:0 28px 48px;display:grid;grid-template-columns:minmax(0,1fr) 390px;grid-template-areas:
+  "top top" "progress progress" "intro intro" "order form" "trust form" "foot foot";column-gap:28px;align-items:start}
+.top{grid-area:top;padding:25px 0 18px;margin:0;border-bottom:0}
+.top .back{width:38px;height:38px;border-radius:11px;background:#fff;box-shadow:0 2px 8px rgba(16,43,70,.06);font-size:1.35rem}
+.top .mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#174b7c,#0e3152);font-size:.75rem;box-shadow:0 4px 10px rgba(18,59,102,.18)}
+.top .logo{font-size:1.15rem;letter-spacing:-.02em}
+.top .h{font-size:.75rem;color:var(--brand);font-weight:700;background:var(--brand-soft);border-radius:999px;padding:7px 11px}
+.progress{grid-area:progress;justify-content:flex-start;gap:9px;padding:5px 0 20px;border-bottom:1px solid var(--line)}
+.progress-step{font-size:.72rem;font-weight:600;color:#8a9aa6}.progress-step span{width:25px;height:25px;font-size:.7rem}
+.progress-step.is-active{color:var(--brand)}.progress i{width:42px;background:#cad7e1}
+.checkout-intro{grid-area:intro;margin:22px 0 14px;color:var(--ink);font-size:1rem;font-weight:700;letter-spacing:-.01em}
+.order-card{grid-area:order}.trust-strip{grid-area:trust}.foot{grid-area:foot}
+.card{border:1px solid rgba(203,217,228,.9);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-bottom:16px}
+.order-card{position:sticky;top:18px;margin-bottom:14px}
+.step-h{gap:11px;margin-bottom:18px}.step-h h2{font-size:1.05rem;letter-spacing:-.015em}.section-icon,.step-n{width:30px;height:30px;border-radius:9px}.step-n{font-size:.8rem}
+.order-items{gap:14px}.order-item{grid-template-columns:68px minmax(0,1fr);gap:13px;padding-bottom:14px}.order-item .thumb{width:68px;height:68px;border-radius:11px;background:#f7fafc}.order-item .nome{font-size:.88rem}.order-item .variant{font-size:.73rem}.order-subtotal{margin-top:17px;padding-top:15px}.order-subtotal strong{font-size:1.05rem}
+.trust-strip{grid-template-columns:1fr;gap:0;border:1px solid var(--line);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}.trust-strip div{justify-content:flex-start;gap:9px;min-height:48px;padding:10px 16px;background:#fff;border-bottom:1px solid #edf2f5;font-size:.7rem}.trust-strip div:last-child{border-bottom:0}.trust-strip .ico{width:17px;height:17px}
+#formArea{grid-area:form;min-width:0}.delivery-card,.personal-card,.payment-card{margin-bottom:16px}
+.delivery-card{display:block}.field{margin-bottom:15px}.field label{font-size:.76rem;margin-bottom:7px;color:#314a5d}.field input,.field select{min-height:50px;padding:13px 14px;border-radius:10px;border-color:#c8d7e1}.field input:focus,.field select:focus{border-color:#2c6d9c;box-shadow:0 0 0 4px rgba(44,109,156,.12)}
+.address-fields,.address-number-fields{margin-top:14px}.shipping-card{margin-top:21px;padding-top:20px}.shipping-title{font-size:.86rem}.shipping-subtitle{font-size:.73rem;margin-bottom:11px}.shipping-option{min-height:68px;padding:13px 12px;border-radius:11px}.shipping-option strong{font-size:.82rem}.shipping-option small{font-size:.7rem}.shipping-price{font-size:.8rem}
+.personal-card.is-visible,.payment-card.is-visible{display:block}.personal-card{border-top:3px solid var(--brand)}.payment-card{border-top:3px solid var(--success)}
+.privacy-note{padding:10px 11px;background:#f5f9fc;border:1px solid #e2ebf1;border-radius:9px;margin-bottom:16px;font-size:.71rem}.btn{min-height:54px;border-radius:10px;font-size:.95rem;box-shadow:0 5px 12px rgba(12,41,69,.12)}.btn.success{box-shadow:0 5px 12px rgba(18,128,84,.18)}
+.total-line{padding:13px 0}.total-line.grand{padding-top:17px}.total-line.grand strong{font-size:1.7rem}.pix-head{padding:13px 14px;border-radius:11px}.pix-head .pixlogo{width:38px;height:38px}.delivery-summary{margin:-2px 0 10px}
+.foot{margin-top:6px;padding-top:10px;font-size:.67rem}.ckbar{display:none!important}
+.pix-pay{padding:28px;border-top-width:4px}.pix-pay h2{font-size:1.2rem}.qr{width:210px;height:210px}.timer-box{padding:14px}.timer-box .clock{font-size:1.45rem}
+@media (max-width:850px){
+  .wrap{max-width:650px;padding:0 18px 36px;display:block}.top{padding-top:19px}.checkout-intro{font-size:.92rem;margin-top:17px}.order-card{position:static}.trust-strip{grid-template-columns:repeat(3,1fr)}.trust-strip div{justify-content:center;text-align:center;border-bottom:0;border-right:1px solid #edf2f5;padding:8px 5px;min-height:56px;flex-direction:column;gap:3px;font-size:.61rem}.trust-strip div:last-child{border-right:0}.ckbar{display:none!important}
+}
+@media (max-width:480px){
+  body{background:#f6f8fb}.wrap{padding-inline:12px}.card{padding:18px;border-radius:14px}.top{padding-inline:1px}.top .h{font-size:.68rem;padding:6px 8px}.progress{gap:5px}.progress-step{font-size:.64rem;gap:4px}.progress-step span{width:23px;height:23px}.progress i{width:20px}.checkout-intro{margin:15px 2px 12px;font-size:.88rem}.order-card{padding:17px}.order-item{grid-template-columns:56px minmax(0,1fr);gap:10px}.order-item .thumb{width:56px;height:56px}.trust-strip{border-radius:12px}.trust-strip div{font-size:.56rem;padding-inline:2px}.trust-strip .ico{width:15px;height:15px}.total-line.grand strong{font-size:1.45rem}.pix-pay{padding:20px 16px}.qr{width:180px;height:180px}
+}
+
 </style>
 </head>
 <body>
@@ -289,7 +345,7 @@ input,select{font:inherit}
   <!-- HEADER -->
   <div class="top">
     <button class="back" id="topBack" type="button" aria-label="Voltar uma etapa">‹</button>
-    <div class="logo">EQUALIV</div>
+    <div class="brand"><div class="mark" aria-hidden="true">EQ</div><div class="logo">Equaliv</div></div>
     <div class="h" id="headerStep">Etapa 1 de 3</div>
   </div>
 
@@ -302,11 +358,11 @@ input,select{font:inherit}
     <div class="progress-step" data-step="3"><span>3</span>Pagamento</div>
   </div>
 
-  <p class="checkout-intro">Confira o pedido e informe os dados de entrega para continuar.</p>
+  <p class="checkout-intro">Revise seu pedido e preencha os dados para receber com segurança.</p>
 
   <!-- RESUMO DO PEDIDO -->
   <div class="card order-card">
-    <div class="step-h"><div class="section-icon"><svg class="ico"><use href="#i-bag"/></svg></div><h2>Resumo do pedido</h2></div>
+    <div class="step-h"><div class="section-icon"><svg class="ico"><use href="#i-bag"/></svg></div><h2>Seu pedido</h2></div>
     <div id="orderItems" class="order-items" aria-live="polite"></div>
     <div class="order-subtotal"><span>Subtotal</span><strong id="orderSubtotal">R$ 0,00</strong></div>
   </div>
@@ -322,7 +378,7 @@ input,select{font:inherit}
 
     <!-- 1. ENTREGA -->
     <div class="card delivery-card" id="deliveryCard">
-      <div class="step-h"><div class="step-n" id="stepN1">1</div><h2>Onde entregar?</h2></div>
+      <div class="step-h"><div class="step-n" id="stepN1">1</div><h2>Endereço de entrega</h2></div>
       <div class="field">
         <label for="cep">CEP <span class="required-mark">*</span></label>
         <input id="cep" type="tel" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9">
@@ -399,7 +455,7 @@ input,select{font:inherit}
 
     <!-- 2. DADOS PESSOAIS -->
     <div class="card personal-card" id="personalCard">
-      <div class="step-h"><div class="step-n" id="stepN2">2</div><h2>Seus dados</h2></div>
+      <div class="step-h"><div class="step-n" id="stepN2">2</div><h2>Dados do comprador</h2></div>
       <p class="privacy-note"><svg class="ico"><use href="#i-lock"/></svg> Usamos estes dados apenas para processar e acompanhar esta compra.</p>
       <div class="field">
         <label for="nome">Nome completo <span class="required-mark">*</span></label>
@@ -418,16 +474,16 @@ input,select{font:inherit}
       </div>
       <p class="field-hint">Exigido pelo Banco Central para identificar quem paga via PIX.</p>
       <button class="section-link-back" id="backToDelivery" type="button"><svg class="ico"><use href="#i-arrow-left"/></svg> Voltar para entrega</button>
-      <button class="btn btn-proceed" id="proceedPayment" type="button">Ir para o pagamento <span aria-hidden="true">→</span></button>
+      <button class="btn btn-proceed" id="proceedPayment" type="button">Continuar para o pagamento</button>
     </div>
 
     <!-- 3. PAGAMENTO -->
     <div class="card payment-card" id="paymentCard">
-      <div class="step-h"><div class="step-n" id="stepN3">3</div><h2>Pagar com PIX</h2></div>
+      <div class="step-h"><div class="step-n" id="stepN3">3</div><h2>Pagamento</h2></div>
       <div class="pix-head">
         <div class="pixlogo">PIX</div>
         <div>
-          <strong>Pagamento instantâneo</strong>
+          <strong>PIX: pagamento instantâneo</strong>
           <small>Aprovação automática em segundos</small>
         </div>
       </div>
@@ -449,7 +505,7 @@ input,select{font:inherit}
         <span>Total a pagar</span>
         <strong id="totalPagar">R$ 0,00</strong>
       </div>
-      <button class="btn success" id="btnGerar" type="button" aria-live="polite"><svg class="ico"><use href="#i-lock"/></svg> Gerar código PIX</button>
+      <button class="btn success" id="btnGerar" type="button" aria-live="polite"><svg class="ico"><use href="#i-lock"/></svg> Revisar e gerar PIX</button>
       <button class="section-link-back" id="backToPersonal" type="button" style="justify-content:center;margin-top:10px"><svg class="ico"><use href="#i-arrow-left"/></svg> Voltar e corrigir meus dados</button>
       <div class="safenote"><svg class="ico"><use href="#i-shield"/></svg> Você só paga depois de revisar o total</div>
       <div class="pix-error hidden" id="pixError" role="alert"></div>
@@ -463,11 +519,11 @@ input,select{font:inherit}
     <div class="pix-purchase-items" id="pixPurchaseItems"></div>
     <div class="pix-purchase-meta"><span>Frete</span><strong id="pixShippingSummary">Selecione</strong></div>
     <div class="pix-purchase-meta"><span>Prazo de entrega</span><strong id="pixDeliverySummary">Selecione uma opção</strong></div>
-    <div class="pix-purchase-total"><span>Total pago</span><strong id="pixTotalSummary">R$ 0,00</strong></div>
+    <div class="pix-purchase-total"><span>Total do pedido</span><strong id="pixTotalSummary">R$ 0,00</strong></div>
   </div>
 
   <div id="pixArea" class="card pix-pay hidden" aria-live="polite">
-    <h2>Pague com PIX para concluir</h2>
+    <h2>Quase lá: conclua com PIX</h2>
     <p class="sub">Escaneie o QR Code pelo app do seu banco ou copie o código abaixo.</p>
     <div class="pix-page-error" id="pixPageError" role="alert"></div>
     <div class="qr" id="qrBox"><img id="pixQr" src="" alt="QR Code PIX para pagamento"><span class="qr-expired-tag">Código expirado</span></div>
@@ -497,15 +553,21 @@ input,select{font:inherit}
     <div class="check"><svg class="ico"><use href="#i-check"/></svg></div>
     <h2>Pedido confirmado</h2>
     <p>Pagamento recebido. Seu pedido já está sendo preparado.</p>
-    <p>Enviaremos os detalhes para o e-mail informado.</p>
+    <p id="approvedDelivery">Enviaremos os detalhes para o e-mail informado.</p>
     <div class="order-ref" id="orderRef"></div>
     <br>
     <a class="btn outline" href="javascript:history.back()">Voltar à loja</a>
   </div>
 
+  <!-- ATENÇÃO: substitua a razão social, o CNPJ e o número de WhatsApp
+       abaixo pelos dados reais e verificáveis da loja antes de publicar.
+       Um checkout com CNPJ/telefone de exemplo (00.000.000/0001-00,
+       +55 00 00000-0000) reduz a confiança do comprador e pode configurar
+       descumprimento do Código de Defesa do Consumidor (identificação do
+       fornecedor). -->
   <div class="foot">
     EQUALIV COMÉRCIO LTDA · CNPJ 00.000.000/0001-00<br>
-    Dúvidas? <a href="https://wa.me/5500000000000" target="_blank" rel="noopener">Fale no WhatsApp</a> ·
+    Precisa de ajuda? <a href="https://wa.me/5500000000000" target="_blank" rel="noopener">Fale no WhatsApp</a> ·
     <a href="/privacidade" target="_blank" rel="noopener">Privacidade</a> ·
     <a href="/termos" target="_blank" rel="noopener">Termos</a>
   </div>
@@ -548,7 +610,7 @@ const orderItems = sourceItems.map((item, index) => ({
   name: item.name || 'Produto',
   variant: item.variant || item.flavor || '',
   weight: item.weight || null,
-  quantity: Math.max(1, numberOr(item.quantity, 1)),
+  quantity: Math.max(1, numberOr(item.quantity ?? item.q, 1)),
   price: numberOr(item.price ?? item.v, 0),
   oldPrice: numberOr(item.oldPrice, 0),
   image: item.image || item.p || (Array.isArray(item.images) ? item.images[0] : ''),
@@ -1188,6 +1250,10 @@ function aprovado() {
   document.getElementById('headerStep').textContent = 'Concluído';
   const refBox = document.getElementById('orderRef');
   if (currentTxn) { refBox.textContent = 'Pedido nº ' + currentTxn; refBox.style.display = 'inline-block'; }
+  const deliveryMsg = document.getElementById('approvedDelivery');
+  if (deliveryMsg && selectedShipping) {
+    deliveryMsg.textContent = `${selectedShipping.promise}. Enviaremos os detalhes de rastreio para o e-mail informado.`;
+  }
   window.scrollTo({ top: 0, behavior: 'smooth' });
   // Purchase não é disparado no front-end: a venda entra pelo webhook do
   // gateway. O fbq('init') com advanced matching abaixo só melhora a
