@@ -290,7 +290,7 @@ input,select{font:inherit}
 body{background:linear-gradient(180deg,#f3f7fa 0,#f8fafc 300px);padding-bottom:24px}
 .securebar{height:36px;padding:0 16px;background:#102f4e;letter-spacing:.01em;font-size:.72rem}
 .wrap{max-width:1120px;padding:0 28px 48px;display:grid;grid-template-columns:minmax(0,1fr) 390px;grid-template-areas:
-  "top top" "progress progress" "order form" "trust form" "foot foot";column-gap:28px;align-items:start}
+  "top top" "progress progress" "order form" "trust trust" "foot foot";column-gap:28px;align-items:start}
 .top{grid-area:top;padding:25px 0 18px;margin:0;border-bottom:0}
 .top .mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#174b7c,#0e3152);font-size:.75rem;box-shadow:0 4px 10px rgba(18,59,102,.18)}
 .top .logo{font-size:1.15rem;letter-spacing:-.02em}
@@ -305,7 +305,7 @@ body{background:linear-gradient(180deg,#f3f7fa 0,#f8fafc 300px);padding-bottom:2
 .step-h{gap:11px;margin-bottom:18px}.step-h h2{font-size:1.05rem;letter-spacing:-.015em}.section-icon,.step-n{width:30px;height:30px;border-radius:9px}.step-n{font-size:.8rem}
 .order-items{gap:14px}.order-item{grid-template-columns:68px minmax(0,1fr);gap:13px;padding-bottom:14px}.order-item .thumb{width:68px;height:68px;border-radius:11px;background:#f7fafc}.order-item .nome{font-size:.88rem}.order-item .variant{font-size:.73rem}.order-subtotal{margin-top:17px;padding-top:15px}.order-subtotal strong{font-size:1.05rem}
 .promo-label{display:inline-flex;align-items:center;width:max-content;margin-bottom:5px;padding:3px 7px;border-radius:999px;background:#edf8f2;color:#14734d;font-size:.62rem;font-weight:800;line-height:1;letter-spacing:.02em}
-.trust-strip{grid-template-columns:1fr;gap:0;border:1px solid var(--line);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}.trust-strip div{justify-content:flex-start;gap:9px;min-height:48px;padding:10px 16px;background:#fff;border-bottom:1px solid #edf2f5;font-size:.7rem}.trust-strip div:last-child{border-bottom:0}.trust-strip .ico{width:17px;height:17px}
+.trust-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);background:#fff;border-radius:12px;box-shadow:none;overflow:hidden;margin:10px 0 18px}.trust-strip div{justify-content:center;gap:7px;min-height:42px;padding:8px 10px;background:#fff;border-right:1px solid #edf2f5;font-size:.66rem;text-align:center}.trust-strip div:last-child{border-right:0}.trust-strip .ico{width:16px;height:16px}
 #formArea{grid-area:form;min-width:0}.delivery-card,.personal-card,.payment-card{margin-bottom:16px}
 .delivery-card{display:block}.field{margin-bottom:15px}.field label{font-size:.76rem;margin-bottom:7px;color:#314a5d}.field input,.field select{min-height:50px;padding:13px 14px;border-radius:10px;border-color:#c8d7e1}.field input:focus,.field select:focus{border-color:#2c6d9c;box-shadow:0 0 0 4px rgba(44,109,156,.12)}
 .address-fields,.address-number-fields{margin-top:14px}.shipping-card{margin-top:21px;padding-top:20px}.shipping-title{font-size:.86rem}.shipping-subtitle{font-size:.73rem;margin-bottom:11px}.shipping-option{min-height:68px;padding:13px 12px;border-radius:11px}.shipping-option strong{font-size:.82rem}.shipping-option small{font-size:.7rem}.shipping-price{font-size:.8rem}
@@ -316,10 +316,10 @@ body{background:linear-gradient(180deg,#f3f7fa 0,#f8fafc 300px);padding-bottom:2
 .foot{margin-top:6px;padding-top:10px;font-size:.67rem}.ckbar{display:none!important}
 .pix-pay{padding:28px;border-top-width:4px}.pix-pay h2{font-size:1.2rem}.qr{width:210px;height:210px}.timer-box{padding:14px}.timer-box .clock{font-size:1.45rem}
 @media (max-width:850px){
-  .wrap{max-width:650px;padding:0 18px 36px;display:block}.top{padding-top:19px}.checkout-intro{font-size:.92rem;margin-top:17px}.order-card{position:static}.trust-strip{grid-template-columns:repeat(3,1fr)}.trust-strip div{justify-content:center;text-align:center;border-bottom:0;border-right:1px solid #edf2f5;padding:8px 5px;min-height:56px;flex-direction:column;gap:3px;font-size:.61rem}.trust-strip div:last-child{border-right:0}.ckbar{display:none!important}
+  .wrap{max-width:650px;padding:0 18px 36px;display:block}.top{padding-top:19px}.checkout-intro{font-size:.92rem;margin-top:17px}.order-card{position:static}.trust-strip{margin-top:6px}.trust-strip div{padding:8px 5px;min-height:50px;font-size:.61rem}.ckbar{display:none!important}
 }
 @media (max-width:480px){
-  body{background:#f6f8fb}.wrap{padding-inline:12px}.card{padding:18px;border-radius:14px}.top{padding-inline:1px}.top .h{font-size:.68rem;padding:6px 8px}.progress{gap:5px}.progress-step{font-size:.64rem;gap:4px}.progress-step span{width:23px;height:23px}.progress i{width:20px}.checkout-intro{margin:15px 2px 12px;font-size:.88rem}.order-card{padding:17px}.order-item{grid-template-columns:56px minmax(0,1fr);gap:10px}.order-item .thumb{width:56px;height:56px}.trust-strip{border-radius:12px}.trust-strip div{font-size:.56rem;padding-inline:2px}.trust-strip .ico{width:15px;height:15px}.total-line.grand strong{font-size:1.45rem}.pix-pay{padding:20px 16px}.qr{width:180px;height:180px}
+  body{background:#f6f8fb}.wrap{padding-inline:12px}.card{padding:18px;border-radius:14px}.top{padding-inline:1px}.top .h{font-size:.68rem;padding:6px 8px}.progress{gap:5px}.progress-step{font-size:.64rem;gap:4px}.progress-step span{width:23px;height:23px}.progress i{width:20px}.checkout-intro{margin:15px 2px 12px;font-size:.88rem}.order-card{padding:17px}.order-item{grid-template-columns:56px minmax(0,1fr);gap:10px}.order-item .thumb{width:56px;height:56px}.trust-strip{border-radius:12px;margin-top:4px}.trust-strip div{font-size:.56rem;padding-inline:2px}.trust-strip .ico{width:15px;height:15px}.total-line.grand strong{font-size:1.45rem}.pix-pay{padding:20px 16px}.qr{width:180px;height:180px}
 }
 
 </style>
@@ -363,12 +363,6 @@ body{background:linear-gradient(180deg,#f3f7fa 0,#f8fafc 300px);padding-bottom:2
     <div class="step-h"><div class="section-icon"><svg class="ico"><use href="#i-bag"/></svg></div><h2>Seu pedido</h2></div>
     <div id="orderItems" class="order-items" aria-live="polite"></div>
     <div class="order-subtotal"><span>Subtotal</span><strong id="orderSubtotal">R$ 0,00</strong></div>
-  </div>
-
-  <div class="trust-strip">
-    <div><svg class="ico"><use href="#i-shield"/></svg> Pagamento seguro</div>
-    <div><svg class="ico"><use href="#i-truck"/></svg> Envio rastreado</div>
-    <div><svg class="ico"><use href="#i-support"/></svg> Suporte por WhatsApp</div>
   </div>
 
   <!-- FORM (etapas) -->
@@ -509,6 +503,12 @@ body{background:linear-gradient(180deg,#f3f7fa 0,#f8fafc 300px);padding-bottom:2
       <div class="pix-error hidden" id="pixError" role="alert"></div>
     </div>
 
+  </div>
+
+  <div class="trust-strip" aria-label="Garantias da compra">
+    <div><svg class="ico"><use href="#i-shield"/></svg> Pagamento seguro</div>
+    <div><svg class="ico"><use href="#i-truck"/></svg> Envio rastreado</div>
+    <div><svg class="ico"><use href="#i-support"/></svg> Suporte por WhatsApp</div>
   </div>
 
   <!-- TELA: PIX GERADO -->
