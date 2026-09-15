@@ -856,6 +856,9 @@ async function buscarEnderecoPorCep() {
     // nele para não atrapalhar quem ainda está lendo a tela.
     document.getElementById('addressNumberFields').classList.add('is-visible');
     document.getElementById('shippingCard').classList.add('is-visible');
+    setTimeout(() => {
+      document.getElementById('addressNumberFields').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 120);
   } catch (e) {
     const elapsed = performance.now() - startedAt;
     if (elapsed < 500) await new Promise(res => setTimeout(res, 500 - elapsed));
@@ -881,11 +884,9 @@ document.querySelectorAll('.shipping-option').forEach(option => option.addEventL
     : { id: 'standard', price: 0, name: 'Entrega econômica', promise: 'Entrega em 3 Dias' };
   updateTotals();
   document.getElementById('shippingCard').classList.remove('needs-choice');
-  if (enderecoCompleto()) {
-    document.getElementById('personalCard').classList.add('is-visible');
-    setStep(2);
-    setTimeout(() => document.getElementById('personalCard').scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
-  }
+  document.getElementById('personalCard').classList.add('is-visible');
+  setStep(2);
+  setTimeout(() => document.getElementById('personalCard').scrollIntoView({ behavior: 'smooth', block: 'center' }), 120);
 }));
 
 /* =====================================================================
