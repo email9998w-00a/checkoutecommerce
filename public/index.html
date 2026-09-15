@@ -290,13 +290,12 @@ input,select{font:inherit}
 body{background:linear-gradient(180deg,#f3f7fa 0,#f8fafc 300px);padding-bottom:24px}
 .securebar{height:36px;padding:0 16px;background:#102f4e;letter-spacing:.01em;font-size:.72rem}
 .wrap{max-width:1120px;padding:0 28px 48px;display:grid;grid-template-columns:minmax(0,1fr) 390px;grid-template-areas:
-  "top top" "progress progress" "intro intro" "order form" "trust form" "foot foot";column-gap:28px;align-items:start}
+  "top top" "progress progress" "order form" "trust form" "foot foot";column-gap:28px;align-items:start}
 .top{grid-area:top;padding:25px 0 18px;margin:0;border-bottom:0}
-.top .back{width:38px;height:38px;border-radius:11px;background:#fff;box-shadow:0 2px 8px rgba(16,43,70,.06);font-size:1.35rem}
 .top .mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#174b7c,#0e3152);font-size:.75rem;box-shadow:0 4px 10px rgba(18,59,102,.18)}
 .top .logo{font-size:1.15rem;letter-spacing:-.02em}
 .top .h{font-size:.75rem;color:var(--brand);font-weight:700;background:var(--brand-soft);border-radius:999px;padding:7px 11px}
-.progress{grid-area:progress;justify-content:flex-start;gap:9px;padding:5px 0 20px;border-bottom:1px solid var(--line)}
+.progress{grid-area:progress;justify-content:center;gap:9px;padding:5px 0 20px;border-bottom:1px solid var(--line)}
 .progress-step{font-size:.72rem;font-weight:600;color:#8a9aa6}.progress-step span{width:25px;height:25px;font-size:.7rem}
 .progress-step.is-active{color:var(--brand)}.progress i{width:42px;background:#cad7e1}
 .checkout-intro{grid-area:intro;margin:22px 0 14px;color:var(--ink);font-size:1rem;font-weight:700;letter-spacing:-.01em}
@@ -305,6 +304,7 @@ body{background:linear-gradient(180deg,#f3f7fa 0,#f8fafc 300px);padding-bottom:2
 .order-card{position:sticky;top:18px;margin-bottom:14px}
 .step-h{gap:11px;margin-bottom:18px}.step-h h2{font-size:1.05rem;letter-spacing:-.015em}.section-icon,.step-n{width:30px;height:30px;border-radius:9px}.step-n{font-size:.8rem}
 .order-items{gap:14px}.order-item{grid-template-columns:68px minmax(0,1fr);gap:13px;padding-bottom:14px}.order-item .thumb{width:68px;height:68px;border-radius:11px;background:#f7fafc}.order-item .nome{font-size:.88rem}.order-item .variant{font-size:.73rem}.order-subtotal{margin-top:17px;padding-top:15px}.order-subtotal strong{font-size:1.05rem}
+.promo-label{display:inline-flex;align-items:center;width:max-content;margin-bottom:5px;padding:3px 7px;border-radius:999px;background:#edf8f2;color:#14734d;font-size:.62rem;font-weight:800;line-height:1;letter-spacing:.02em}
 .trust-strip{grid-template-columns:1fr;gap:0;border:1px solid var(--line);background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}.trust-strip div{justify-content:flex-start;gap:9px;min-height:48px;padding:10px 16px;background:#fff;border-bottom:1px solid #edf2f5;font-size:.7rem}.trust-strip div:last-child{border-bottom:0}.trust-strip .ico{width:17px;height:17px}
 #formArea{grid-area:form;min-width:0}.delivery-card,.personal-card,.payment-card{margin-bottom:16px}
 .delivery-card{display:block}.field{margin-bottom:15px}.field label{font-size:.76rem;margin-bottom:7px;color:#314a5d}.field input,.field select{min-height:50px;padding:13px 14px;border-radius:10px;border-color:#c8d7e1}.field input:focus,.field select:focus{border-color:#2c6d9c;box-shadow:0 0 0 4px rgba(44,109,156,.12)}
@@ -344,7 +344,6 @@ body{background:linear-gradient(180deg,#f3f7fa 0,#f8fafc 300px);padding-bottom:2
 
   <!-- HEADER -->
   <div class="top">
-    <button class="back" id="topBack" type="button" aria-label="Voltar uma etapa">‹</button>
     <div class="brand"><div class="mark" aria-hidden="true">EQ</div><div class="logo">Equaliv</div></div>
     <div class="h" id="headerStep">Etapa 1 de 3</div>
   </div>
@@ -357,8 +356,6 @@ body{background:linear-gradient(180deg,#f3f7fa 0,#f8fafc 300px);padding-bottom:2
     <i></i>
     <div class="progress-step" data-step="3"><span>3</span>Pagamento</div>
   </div>
-
-  <p class="checkout-intro">Revise seu pedido e preencha os dados para receber com segurança.</p>
 
   <!-- RESUMO DO PEDIDO -->
   <div class="card order-card">
@@ -643,7 +640,8 @@ function renderOrderSummary() {
     const img = item.image ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy">` : '<span aria-hidden="true"></span>';
     const details = [item.variant, item.weight ? `${item.weight} g` : '', item.quantity > 1 ? `Qtd ${item.quantity}` : ''].filter(Boolean).join(' · ');
     const unitPrice = item.quantity > 1 ? `<small>${item.quantity} × ${brl(item.price)}</small>` : '';
-    row.innerHTML = `<div class="thumb">${img}</div><div class="info"><div><div class="nome">${escapeHtml(item.name)}</div><div class="variant">${escapeHtml(details)}</div></div><div class="line-price">${brl(item.lineSubtotal)}${unitPrice}</div></div>`;
+    const promoLabel = '<span class="promo-label">Oferta especial</span>';
+    row.innerHTML = `<div class="thumb">${img}</div><div class="info"><div>${promoLabel}<div class="nome">${escapeHtml(item.name)}</div><div class="variant">${escapeHtml(details)}</div></div><div class="line-price">${brl(item.lineSubtotal)}${unitPrice}</div></div>`;
     list.appendChild(row);
   });
   subtotalEl.textContent = brl(order.subtotal);
@@ -958,17 +956,6 @@ document.getElementById('backToPersonal').addEventListener('click', () => {
   setStep(2);
   document.getElementById('personalCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
-document.getElementById('topBack').addEventListener('click', () => {
-  if (!document.getElementById('pixArea').classList.contains('hidden') || !document.getElementById('okArea').classList.contains('hidden')) return;
-  if (document.getElementById('paymentCard').classList.contains('is-visible')) {
-    document.getElementById('backToPersonal').click();
-  } else if (document.getElementById('personalCard').classList.contains('is-visible')) {
-    document.getElementById('backToDelivery').click();
-  } else {
-    document.getElementById('deliveryCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-});
-
 /* ---- Enter no teclado avança a etapa, como em qualquer formulário nativo
    (aqui não há <form> para não correr o risco de disparar um submit). ---- */
 function onEnterAdvance(ids, action) {
